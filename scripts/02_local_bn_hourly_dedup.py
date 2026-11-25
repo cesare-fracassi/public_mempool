@@ -74,7 +74,7 @@ sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 RAW_DIR = Path("data/raw/blocknative")
 # The exclusion lists and the log get a suffix _p<i>of<n> when the script runs as --part i/n, so parallel parts never write the same list file.
 OUT_DIR = Path("data/interim/blocknative_hourly")
-LOG_PATH = Path("scripts/_local_bn_hourly_dedup.log")
+LOG_PATH = Path("logs/local_bn_hourly_dedup.log")
 CORRUPT_LIST_PATH = RAW_DIR.parent / "corrupt_hourly_files_local_dedup.md"
 RECOVERED_LIST_PATH = RAW_DIR.parent / "recovered_hourly_files_local_dedup.md"
 TIMEOUT_LIST_PATH = RAW_DIR.parent / "timeout_hourly_files_local_dedup.md"
@@ -386,6 +386,7 @@ def main():
     timeout_counts = load_timeout_counts()
     t_start = time.time()
 
+    LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
     with open(LOG_PATH, "a", encoding="utf-8", errors="replace") as log:
         log.write(f"\n=== Run started {time.strftime('%Y-%m-%d %H:%M:%S')} - {total} files total "
                    f"(per-file timeout {FILE_TIMEOUT_SECONDS}s) ===\n")

@@ -79,6 +79,7 @@ sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 REPO = Path(__file__).resolve().parent.parent
 PY = sys.executable
 SCRIPTS = REPO / "scripts"
+LOGS = REPO / "logs"  # every log file goes here (not versioned)
 RAW_DIR = REPO / "data/raw/blocknative"
 HOURLY_DIR = REPO / "data/interim/blocknative_hourly"
 DAILY_DIR = REPO / "data/interim/blocknative_daily"
@@ -192,7 +193,8 @@ def stage_merge(a):
     ranges = [(i * size, min((i + 1) * size, N_SHARDS) - 1) for i in range(n) if i * size < N_SHARDS]
     procs = []
     for lo, hi in ranges:
-        logp = SCRIPTS / f"_run_all_merge_{lo}_{hi}.log"
+        LOGS.mkdir(parents=True, exist_ok=True)
+        logp = LOGS / f"run_all_merge_{lo}_{hi}.log"
         log = open(logp, "w", encoding="utf-8")
         p = subprocess.Popen([PY, "scripts/04_local_bn_global_hash_merge.py", "--phase", "2",
                               "--scratch-dir", str(a.scratch_dir),
@@ -271,7 +273,7 @@ def stage_xatu(a):
           f"({n_daily():,} files for {n_days:,} days {XATU_FIRST_DAY}..{end}; a day Xatu has not published stays missing)")
     check("no leftover .tmp files in the Xatu daily folder", not (daily.exists() and list(daily.glob("*.tmp"))))
     check("no STOP file (no worker was blocked)", not (root / "STOP").exists())
-    log = root / "logs" / "stage2.log"
+    log = LOGS / "stage2.log"
     if not xatu_merge_complete(root):
         log.parent.mkdir(parents=True, exist_ok=True)
         cmd = [PY, "scripts/05_xatu_mempool_all_days.py", "--out-root", str(root), "--merge", "--verify", str(a.verify_sample)]
@@ -301,7 +303,8 @@ def _run_shard_phase(a, phase, done_dir, done_word):
     ranges = [(i * size, min((i + 1) * size, N_SHARDS) - 1) for i in range(n) if i * size < N_SHARDS]
     procs = []
     for lo, hi in ranges:
-        logp = SCRIPTS / f"_run_all_{phase}_{lo}_{hi}.log"
+        LOGS.mkdir(parents=True, exist_ok=True)
+        logp = LOGS / f"run_all_{phase}_{lo}_{hi}.log"
         log = open(logp, "w", encoding="utf-8")
         p = subprocess.Popen([PY, *_combine_script_args(a, "--phase", phase, "--shard-start", str(lo), "--shard-end", str(hi))],
                              cwd=REPO, stdout=log, stderr=subprocess.STDOUT)

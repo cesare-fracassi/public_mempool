@@ -56,7 +56,7 @@ sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 HOURLY_DIR = Path("data/interim/blocknative_hourly")
 OUT_DIR = Path("data/interim/blocknative_daily")
-LOG_PATH = Path("scripts/_local_bn_daily_aggregate.log")
+LOG_PATH = Path("logs/local_bn_daily_aggregate.log")
 
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -105,6 +105,7 @@ def main():
     done = skipped = not_ready = 0
     t_start = time.time()
 
+    LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
     with open(LOG_PATH, "a", encoding="utf-8", errors="replace") as log:
         log.write(f"\n=== Run started {time.strftime('%Y-%m-%d %H:%M:%S')} - {total} days seen ===\n")
         log.flush()

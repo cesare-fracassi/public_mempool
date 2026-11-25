@@ -1,8 +1,8 @@
 # Data (raw, interim and processed) is not versioned
 data/
 
-# Logs and caches written by the scripts
-scripts/_*.log
+# Logs and caches written by the scripts (all logs go to logs/)
+logs/
 *.log
 __pycache__/
 *.pyc

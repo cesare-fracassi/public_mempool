@@ -25,7 +25,7 @@ Files:
                                           sorted; XX = the hash's first byte (the 257-shard scheme of the full build).
                                           An 8-byte key makes a false match between two different hashes about 1e-3 per month
                                           over the whole history; such a match would drop one new hash.
-  data/update_log.jsonl                   one line of statistics per update
+  logs/update_log.jsonl                   one line of statistics per update
 
 Commands (run from the repository root; needs a node for step 3 unless --no-chain):
     python scripts/update_month.py --init               # once: build the hash index and state.json from data/processed/
@@ -124,7 +124,7 @@ class Paths:
         self.xatu_daily = self.xatu_root / "daily"
         self.index = d / "interim" / "hash_index"
         self.state = d / "state.json"
-        self.log = d / "update_log.jsonl"
+        self.log = Path("logs") / "update_log.jsonl"  # relative to the repository root, like the other scripts
         self.work = Path(a.work_dir)
 
     def month_file(self, m: str) -> Path:
@@ -471,6 +471,7 @@ def update_month(a, p: Paths, month: str):
     write_state(p, new_state)
     entry = {**new_state, "month": month, "rows_new_month": mf.height, "totals": tot, "stragglers": {m: n for m, n in written.items() if m != month},
              "refreshed": refreshed, "coverage": cov, "minutes": round((time.time() - t_start) / 60, 1)}
+    p.log.parent.mkdir(parents=True, exist_ok=True)
     with open(p.log, "a", encoding="utf-8") as fh:
         fh.write(json.dumps(entry) + "\n")
     shutil.rmtree(work, ignore_errors=True) if a.clean_work else None

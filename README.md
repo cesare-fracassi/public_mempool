@@ -116,7 +116,8 @@ data/interim/xatu_full/            daily/ (hash, first_ts, last_ts) and merged/ 
 data/interim/public_mempool_work/  working files of the last stage; safe to delete after a build
 data/interim/hash_index/           one sorted key per published hash, 257 shards (monthly update)
 data/processed/                    the monthly files
-data/state.json, data/update_log.jsonl   last month built and last chain block; one line per update
+data/state.json                    last month built and last chain block
+logs/                              every log file the scripts write (update_log.jsonl: one line per monthly update); not versioned
 scripts/                           the build; bn_wrong_hour_files.csv lists the 51 wrong-hour files
 ```
 
